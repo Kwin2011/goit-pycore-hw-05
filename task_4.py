@@ -1,14 +1,29 @@
+# TASK 3 & 4 !!
+import logging
+
+logging.basicConfig(
+    filename='contacts.log',
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+
 def input_error(func):
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except ValueError:
+            logging.error("ValueError: Give me name and phone please.")
             return "Give me name and phone please."
         except IndexError:
+            logging.error("IndexError: Enter the argument for the command.")
             return "Enter the argument for the command."
         except KeyError:
+            logging.error("KeyError: Error: Contact not found.")
             return "Error: Contact not found."
         except TypeError:
+            logging.error("TypeError: Invalid command format.")
             return "Invalid command format."
     return inner
 
@@ -16,14 +31,16 @@ def parse_input(user_input):
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
     return cmd, args
-
+# logging.info("Debug message")
 @input_error
 def add_contact(args, contacts):
     if len(args) != 2:
         raise ValueError
     name, phone = args
     contacts[name] = phone
+    logging.info(f"Contact added: {name} - {phone}")
     return "Contact added."
+# logging.info("Debug message")
 
 @input_error
 def change_contact(args, contacts):
@@ -32,6 +49,8 @@ def change_contact(args, contacts):
     name, phone = args
     if name in contacts:
         contacts[name] = phone
+
+        logging.info(f"Contact updated: {name} - {phone}")
         return "Contact updated."
     else:
         raise KeyError
@@ -42,6 +61,7 @@ def show_phone(args, contacts):
         raise ValueError
     name = args[0]
     if name in contacts:
+        logging.info(f"Phone number retrieved for: {name}")
         return contacts[name]
     else:
         raise KeyError
@@ -55,6 +75,7 @@ def show_all(contacts):
 
 def main():
     contacts = {}
+    logging.info("Bot started.")
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ")
@@ -74,6 +95,7 @@ def main():
         elif command == "all":
             print(show_all(contacts))
         else:
+            logging.warning(f"Invalid command entered: {command}")
             print("Invalid command.")
 
 if __name__ == "__main__":
